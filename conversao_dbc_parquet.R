@@ -1,25 +1,4 @@
-# ============================================================
-# Conversão em lote: caminho_origem -> caminho_destino
-# a partir do CSV sia_alterados_ontem.csv
-# ============================================================
-#
-# Este script lê o CSV de controle e, para CADA linha, converte o
-# arquivo .DBC indicado em "caminho_origem" para .parquet no caminho
-# indicado em "caminho_destino" -- já incluindo a correção de encoding
-# Latin-1 -> UTF-8 identificada anteriormente.
-#
-# OBS: por padrão, o script converte TODAS as linhas do CSV (inclusive
-# as que já têm existe_parquet = TRUE), regravando o parquet de cada
-# uma. Se você quiser converter apenas os arquivos que AINDA NÃO têm
-# parquet (existe_parquet = FALSE), veja a variável
-# "somente_pendentes" na seção de configurações abaixo.
-#
-# PRÉ-REQUISITOS: read.dbc, arrow, readr, dplyr (mesmos de antes).
-
-library(read.dbc)
-library(arrow)
-library(readr)
-library(dplyr)
+pacman::p_load(read.dbc, arrow, tidyverse)
 
 # ---- 0. Função de correção de encoding ---------------------------------
 
@@ -36,10 +15,9 @@ corrigir_encoding_utf8 <- function(df, encoding_origem = "latin1") {
 
 # ---- 1. Configurações ---------------------------------------------------
 
-caminho_csv <- "sia_alterados_ontem.csv"   # ajuste para o caminho completo
+caminho_csv <- "sia_alterados_ontem.csv"  
 
 # Se TRUE, converte apenas as linhas com existe_parquet == FALSE
-# (ou seja, pula os 236 arquivos que já têm parquet gerado).
 # Se FALSE (padrão), converte TODAS as linhas, regravando tudo.
 somente_pendentes <- FALSE
 
@@ -59,8 +37,7 @@ cat(sprintf("Total de arquivos a converter: %d\n\n", nrow(registros)))
 
 converter_dbc_para_parquet <- function(caminho_origem, caminho_destino,
                                        encoding_origem = "latin1") {
-  
-  # Garante que a pasta de destino exista (ex.: .../datalake/sia/pa/2026/)
+
   dir_destino <- dirname(caminho_destino)
   if (!dir.exists(dir_destino)) {
     dir.create(dir_destino, recursive = TRUE)
