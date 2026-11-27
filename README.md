@@ -21,7 +21,7 @@ Para cada linha, o arquivo é lido com `read.dbc`, as colunas de texto são reco
 ## Uso
 
 ```r
-install.packages(c("read.dbc", "arrow", "readr", "dplyr"))
+pacman::p_load(read.dbc, arrow, tidyverse)
 ```
 
 1. Monte o CSV de controle (por exemplo, listando os `.dbc` novos ou alterados desde a última execução).
